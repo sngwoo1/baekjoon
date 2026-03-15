@@ -1,77 +1,98 @@
 #include <stdio.h>
-
 #define MAX_SIZE 102
 
-char stack[MAX_SIZE];
-int top;
+typedef char Element;
 
-void init(void)
+Element stack[MAX_SIZE];
+int top = -1;
+
+int is_full(void)
 {
-    top = -1;
+    if (top == MAX_SIZE-1)
+        return 1;
+    else
+        return 0;
 }
 
 int is_empty(void)
 {
-    return top == -1;
+    if (top == -1)
+        return 1;
+    else
+        return 0;
 }
 
-void push(char c)
+void init (void)
 {
-    stack[++top] = c;
+    top = -1;
 }
 
-char pop(void)
+void push (Element e)
 {
-    return stack[top--];
+    if (is_full())
+        return;
+    else
+        stack[++top] = e;
 }
 
-int check_matching(char str[])
+Element pop ()
 {
-    int i = 0;
-    char ch, prev;
+    if (is_empty())
+        return 1;
+    else
+        return stack[top--];
+}
+
+Element peek()
+{
+    if (is_empty())
+        return 1;
+    else
+        return stack[top];
+}
+
+int check_matching(char expr[])
+{
+    int i = 0, prev;
 
     init();
-
-    while (str[i] != '\0')
+    while(expr[i] != 0)
     {
-        ch = str[i];
-
-        if (ch == '(' || ch == '[')
-        {
+        char ch = expr[i];
+        if ( (ch == '[') || (ch == '('))
             push(ch);
-        }
-        else if (ch == ')' || ch == ']')
+        else if ( ( ch == ']') || (ch == ')') )
         {
             if (is_empty())
-                return 0;
-
+                return 2;
+            
             prev = pop();
-
-            if ((ch == ')' && prev != '(') ||
-                (ch == ']' && prev != '['))
-                return 0;
+            if ( (ch == ']' && prev != '[') || ( ch == ')' && prev != '(') )
+                return 3;
         }
-
         i++;
     }
-
-    return is_empty();
+    if (is_empty())
+        return 0;
+    else    return 1;
 }
 
 int main(void)
 {
-    char str[MAX_SIZE];
+    char expr[102];
 
-    while (fgets(str, sizeof(str), stdin) != NULL)
+    while(1)
     {
-        if (str[0] == '.' && (str[1] == '\n' || str[1] == '\0'))
-            break;
+        fgets(expr, sizeof(expr), stdin);
 
-        if (check_matching(str))
+        if (expr[0] == '.' && expr[1] == '\n')
+            return 0;
+        
+        int check_return = check_matching(expr);
+
+        if (check_return == 0)
             printf("yes\n");
         else
             printf("no\n");
     }
-
-    return 0;
 }
