@@ -44,114 +44,69 @@ Element peek()
     return data[top];
 }
 
-int size()
+int precedence(char ch)
 {
-    return top + 1;
+    switch(ch)
+    {
+        case '(': case ')':
+            return 0;
+        case '+': case '-' :
+            return 1;
+        case '*': case '/':
+            return 2;
+    }
 }
 
 
-double eval_postfix(char* expr)
+void infix_postfix (char * str)
 {
     init_stack();
     int i = 0;
 
-    while(expr[i] != 0)
+    while(str[i]!= 0)
     {
-        char c = expr[i];
-        if ( c >= '0' && c <= '9')
-            push(((double)c-'0'));
-        
-        else if ( ( c == '+') || (c == '-') || (c == '*') || (c == '/'))
-        {
-            double right = pop();
-            double left = pop();
+        char c = str[i++];
 
-            switch(c)
-            {
-                case '+':
-                push( left + right);
-                break;
-
-                case '-':
-                push( left - right);
-                break;
-
-                case '*':
-                push( left * right);
-                break;
-
-                case '/':
-                push( left / right);
-                break;
-
-            }
-        }
-        i ++;
-    }
-    return pop();
-}
-
-int precedence(char op)
-{
-    switch (op)
-    {
-        case '(': case ')': return 0;
-        case '+': case '-': return 1;
-        case '*': case '/': return 2;
-    }
-}
-
-void infix_to_postfix(char * expr)
-{
-    init_stack();
-
-    int i = 0;
-    while (expr[i] != 0)
-    {
-        char c = expr[i++];
-
-        if ( ( c>= 'A') && ( c <= 'Z') )
+        if ( c >= 'A' && c <= 'Z')
             printf("%c", c);
-        
-        else if (c == '(')
+        else if ( c == '(')
+        {
             push(c);
-        else if (c == ')')
+        }
+        else if ( c == ')')
         {
             while (is_empty() == 0)
             {
-                char op = pop();
-                if (op == '(')
+                if (peek() == '(')
+                {
+                    pop();
                     break;
-                else
-                    printf("%c", op);
+                }
+                printf("%c", pop());
             }
         }
-
-        else if ( (c == '+') || (c == '-') || (c == '*') || (c == '/') )
+        else if ( c == '+' || c=='-' || c=='*' || c=='/' )
         {
             while(is_empty() == 0)
             {
                 char op = peek();
                 if (precedence(c) <= precedence(op))
                 {
-                    printf("%c", op);
-                    pop();
+                    printf("%c", pop());
                 }
                 else break;
             }
             push(c);
         }
     }
-    while (is_empty() == 0)
+    while(is_empty() == 0)
         printf("%c", pop());
-    printf("\n");
 }
 
 int main(void)
 {
     char str[100];
     scanf("%s", str);
-    infix_to_postfix(str);
-
+    infix_postfix(str);
     return 0;
 }
