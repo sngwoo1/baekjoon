@@ -1,66 +1,75 @@
 #include <stdio.h>
-
 #define MAX_SIZE 1002
 typedef int Element;
 
-struct Queue {
-    Element data[MAX_SIZE];
-    int front;
-    int rear;
-};
-typedef struct Queue Queue;
+Element data[MAX_SIZE];
+int front, rear;
 
-void init_queue(Queue *q) {
-    q->front = 0;
-    q->rear = 0;
+void init_queue()
+{
+    front = 0;
+    rear = 0;
 }
 
-int is_empty(Queue *q) {
-    return (q->front == q->rear);
+int is_empty(void)
+{
+    return (front == rear);
 }
 
-int is_full(Queue *q) {
-    return (q->front == (q->rear + 1) % MAX_SIZE);
+int is_full(void)
+{
+    return (front == (rear+1)%MAX_SIZE);
 }
 
-void enqueue(Queue *q, Element e) {
-    if (is_full(q)) return;
-    q->rear = (q->rear + 1) % MAX_SIZE;
-    q->data[q->rear] = e;
+void enqueue(Element e)
+{
+    rear = (rear+1) % MAX_SIZE;
+    data[rear] = e;
 }
 
-Element dequeue(Queue *q) {
-    if (is_empty(q)) return -1;
-    q->front = (q->front + 1) % MAX_SIZE;
-    return q->data[q->front];
+Element dequeue(void)
+{
+    if (is_empty())
+        printf("underflow\n");
+    front = (front+1) % MAX_SIZE;
+
+    return data[front];
 }
 
-int main(void) {
-    Queue que;
+Element peek(void)
+{
+    if (is_empty())
+        printf("underflow\n");
+    Element value = (front+1) % MAX_SIZE;
+
+    return data[value];
+}
+
+int main(void) 
+{
     int N, K;
 
-    if (scanf("%d %d", &N, &K) != 2) return 0;
+    scanf("%d %d", &N, &K);
 
-    init_queue(&que);
+    init_queue();
 
     // 1부터 N까지 큐에 삽입
-    for (int i = 1; i <= N; i++) {
-        enqueue(&que, i);
-    }
+    for (int i = 1; i <= N; i++) 
+        enqueue(i);
 
     printf("<");
 
-    for (int i = 0; i < N; i++) {
-        // 1. K-1번 동안 앞에 있는 사람을 꺼내서 다시 뒤로 보냄 (회전)
-        for (int j = 0; j < K - 1; j++) {
-            enqueue(&que, dequeue(&que));
+    for (int i = 0; i < N; i++) 
+    {
+        for (int j = 0; j < K - 1; j++) 
+        {
+            enqueue(dequeue());
         }
 
-        // 2. K번째 사람을 꺼내서 출력
-        printf("%d", dequeue(&que));
+        printf("%d", dequeue());
 
-        // 3. 마지막 요소가 아니면 쉼표 출력
-        if (i < N - 1) {
+        if (i < N - 1) 
+        {
             printf(", ");
         }
     }
