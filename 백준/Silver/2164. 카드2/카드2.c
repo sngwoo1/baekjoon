@@ -59,17 +59,17 @@ int main(void)
     for(int i = 1; i <= N; i++)
         enqueue(i);
     
-    int result = 1;
+    int value = 1;
     while(!is_empty())
     {
-        result = dequeue();
+        value = dequeue();
 
         if (!is_empty())
         {
             enqueue(dequeue());
         }
     }
-    printf("%d\n", result);
+    printf("%d\n", value);
 
     return 0;
 
